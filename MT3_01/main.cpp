@@ -3,6 +3,10 @@
 
 const char kWindowTitle[] = "LD2A_05_コバヤシ_タカヒト_タイトル";
 
+struct Matrix4x4
+{
+	float m[4][4];
+};
 
 
 // Windowsアプリでのエントリーポイント(main関数)
