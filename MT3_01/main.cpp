@@ -4,6 +4,10 @@
 
 const char kWindowTitle[] = "LD2A_05_コバヤシ_タカヒト_タイトル";
 
+struct Vector3 {
+	float x, y, z;
+};
+
 struct Matrix4x4
 {
 	float m[4][4];
