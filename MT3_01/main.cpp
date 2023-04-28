@@ -12,7 +12,21 @@ struct Matrix4x4
 {
 	float m[4][4];
 };
-
+//Matrix4x4 積
+Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
+	Matrix4x4 result;
+	float term = 0.0f;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			term = 0;
+			for (int k = 0; k < 4; k++) {
+				term = term + m1.m[i][k] * m2.m[k][j];
+				result.m[i][j] = term;
+			}
+		}
+	}
+	return result;
+}
 
 //並行移動行列
 Matrix4x4 MakeTranslateMatrix(const Vector3& translate) {
@@ -163,9 +177,9 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix,const char* label)
 	}
 }
 void VectorScreenPrintf(int x, int y, const Vector3& vector, const char* label) {
-	Novice::ScreenPrintf(x, y, "%.02f", vector.x);
-	Novice::ScreenPrintf(x + kColumnWidth, y, "%.02f", vector.y);
-	Novice::ScreenPrintf(x + kColumnWidth * 2, y, "%.02f", vector.z);
+	Novice::ScreenPrintf(x, y, "%.02f", vector.x,label);
+	Novice::ScreenPrintf(x + kColumnWidth, y, "%.02f", vector.y, label);
+	Novice::ScreenPrintf(x + kColumnWidth * 2, y, "%.02f", vector.z, label);
 	Novice::ScreenPrintf(x + kColumnWidth * 3, y, "%s", label);
 }
 
@@ -185,7 +199,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
 	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
 
-	//Matrix4x4 rotateXYZMatrix = Multiply()
+	
+	Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, (Multiply(rotateYMatrix, rotateZMatrix)));
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -210,7 +225,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		
-		
+		MatrixScreenPrintf(0, 0, rotateXMatrix, "rotateXMatrix");
+		MatrixScreenPrintf(0, kRowHeight * 5, rotateYMatrix, "rotateYMatrix");
+		MatrixScreenPrintf(0, kRowHeight * 5 * 2, rotateZMatrix, "rotateZMatrix");
+		MatrixScreenPrintf(0, kRowHeight * 5 * 3, rotateXYZMatrix, "rotateXYZMatrix");
 
 
 		///
