@@ -1,5 +1,5 @@
 #include <Novice.h>
-#include <math.h>
+#include <cmath>
 #include<cassert>
 
 const char kWindowTitle[] = "LD2A_05_コバヤシ_タカヒト_タイトル";
