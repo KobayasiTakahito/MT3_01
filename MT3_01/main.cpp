@@ -213,20 +213,20 @@ void VectorScreenPrintf(int x, int y, const Vector3& vector, const char* label) 
 	Novice::ScreenPrintf(x + kColumnWidth * 3, y, "%s", label);
 }
 
-float cotangent(float b, float a) {
+float Cotangent(float b, float a) {
 	return (b / tanf(a));
 }
 
 //透投影行列
 Matrix4x4 MakeperspectiveFovMatrix(float fovY, float aspectRatio, float neatClip, float farClip) {
 	Matrix4x4 result;
-	result.m[0][0] = cotangent((1 / aspectRatio), (fovY/2));
+	result.m[0][0] = Cotangent((1 / aspectRatio), (fovY/2));
 	result.m[0][1] = 0.0f;
 	result.m[0][2] = 0.0f;
 	result.m[0][3] = 0.0f;
 
 	result.m[1][0] = 0.0f;
-	result.m[1][1] = cotangent(1,fovY/2);
+	result.m[1][1] = Cotangent(1,fovY/2);
 	result.m[1][2] = 0.0f;
 	result.m[1][3] = 0.0f;
 
