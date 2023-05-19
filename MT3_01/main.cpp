@@ -301,6 +301,190 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2) {
 	return v3;
 
 }
+//４　逆行列
+Matrix4x4 Inverse(const Matrix4x4& m) {
+	Matrix4x4 result;
+	float determinant =
+		m.m[0][0] * m.m[1][1] * m.m[2][2] * m.m[3][3]
+		+ m.m[0][0] * m.m[1][2] * m.m[2][3] * m.m[3][1]
+		+ m.m[0][0] * m.m[1][3] * m.m[2][1] * m.m[3][2]
+		- m.m[0][0] * m.m[1][3] * m.m[2][2] * m.m[3][1]
+		- m.m[0][0] * m.m[1][2] * m.m[2][1] * m.m[3][3]
+		- m.m[0][0] * m.m[1][1] * m.m[2][3] * m.m[3][2]
+		- m.m[0][1] * m.m[1][0] * m.m[2][2] * m.m[3][3]
+		- m.m[0][2] * m.m[1][0] * m.m[2][3] * m.m[3][1]
+		- m.m[0][3] * m.m[1][0] * m.m[2][1] * m.m[3][2]
+		+ m.m[0][3] * m.m[1][0] * m.m[2][2] * m.m[3][1]
+		+ m.m[0][2] * m.m[1][0] * m.m[2][1] * m.m[3][3]
+		+ m.m[0][1] * m.m[1][0] * m.m[2][3] * m.m[3][2]
+		+ m.m[0][1] * m.m[1][2] * m.m[2][0] * m.m[3][3]
+		+ m.m[0][2] * m.m[1][3] * m.m[2][0] * m.m[3][1]
+		+ m.m[0][3] * m.m[1][1] * m.m[2][0] * m.m[3][2]
+		- m.m[0][3] * m.m[1][2] * m.m[2][0] * m.m[3][1]
+		- m.m[0][2] * m.m[1][1] * m.m[2][0] * m.m[3][3]
+		- m.m[0][1] * m.m[1][3] * m.m[2][0] * m.m[3][2]
+		- m.m[0][1] * m.m[1][2] * m.m[2][3] * m.m[3][0]
+		- m.m[0][2] * m.m[1][3] * m.m[2][1] * m.m[3][0]
+		- m.m[0][3] * m.m[1][1] * m.m[2][2] * m.m[3][0]
+		+ m.m[0][3] * m.m[1][2] * m.m[2][1] * m.m[3][0]
+		+ m.m[0][2] * m.m[1][1] * m.m[2][3] * m.m[3][0]
+		+ m.m[0][1] * m.m[1][3] * m.m[2][2] * m.m[3][0];
+	assert(determinant != 0.0f);
+	float determinantRecp = 0.0f;
+	determinantRecp = 1.0f / determinant;
+
+	result.m[0][0] =
+		(m.m[1][1] * m.m[2][2] * m.m[3][3]
+			+ m.m[1][2] * m.m[2][3] * m.m[3][1]
+			+ m.m[1][3] * m.m[2][1] * m.m[3][2]
+			- m.m[1][3] * m.m[2][2] * m.m[3][1]
+			- m.m[1][2] * m.m[2][1] * m.m[3][3]
+			- m.m[1][1] * m.m[2][3] * m.m[3][2]
+			) / determinant;
+
+	result.m[0][1] =
+		(-m.m[0][1] * m.m[2][2] * m.m[3][3]
+			- m.m[0][2] * m.m[2][3] * m.m[3][1]
+			- m.m[0][3] * m.m[2][1] * m.m[3][2]
+			+ m.m[0][3] * m.m[2][2] * m.m[3][1]
+			+ m.m[0][2] * m.m[2][1] * m.m[3][3]
+			+ m.m[0][1] * m.m[2][3] * m.m[3][2]
+			) / determinant;
+
+	result.m[0][2] =
+		(m.m[0][1] * m.m[1][2] * m.m[3][3]
+			+ m.m[0][2] * m.m[1][3] * m.m[3][1]
+			+ m.m[0][3] * m.m[1][1] * m.m[3][2]
+			- m.m[0][3] * m.m[1][2] * m.m[3][1]
+			- m.m[0][2] * m.m[1][1] * m.m[3][3]
+			- m.m[0][1] * m.m[1][3] * m.m[3][2]
+			) / determinant;
+
+	result.m[0][3] =
+		(-m.m[0][1] * m.m[1][2] * m.m[2][3]
+			- m.m[0][2] * m.m[1][3] * m.m[2][1]
+			- m.m[0][3] * m.m[1][1] * m.m[2][2]
+			+ m.m[0][3] * m.m[1][2] * m.m[2][1]
+			+ m.m[0][2] * m.m[1][1] * m.m[2][3]
+			+ m.m[0][1] * m.m[1][3] * m.m[2][2]
+			) / determinant;
+
+
+
+	result.m[1][0] =
+		(-m.m[1][0] * m.m[2][2] * m.m[3][3]
+			- m.m[1][2] * m.m[2][3] * m.m[3][0]
+			- m.m[1][3] * m.m[2][0] * m.m[3][2]
+			+ m.m[1][3] * m.m[2][2] * m.m[3][0]
+			+ m.m[1][2] * m.m[2][0] * m.m[3][3]
+			+ m.m[1][0] * m.m[2][3] * m.m[3][2]
+			) / determinant;
+
+	result.m[1][1] =
+		(m.m[0][0] * m.m[2][2] * m.m[3][3]
+			+ m.m[0][2] * m.m[2][3] * m.m[3][0]
+			+ m.m[0][3] * m.m[2][0] * m.m[3][2]
+			- m.m[0][3] * m.m[2][2] * m.m[3][0]
+			- m.m[0][2] * m.m[2][0] * m.m[3][3]
+			- m.m[0][0] * m.m[2][3] * m.m[3][2]
+			) / determinant;
+
+	result.m[1][2] =
+		(-m.m[0][0] * m.m[1][2] * m.m[3][3]
+			- m.m[0][2] * m.m[1][3] * m.m[3][0]
+			- m.m[0][3] * m.m[1][0] * m.m[3][2]
+			+ m.m[0][3] * m.m[1][2] * m.m[3][0]
+			+ m.m[0][2] * m.m[1][0] * m.m[3][3]
+			+ m.m[0][0] * m.m[1][3] * m.m[3][2]
+			) / determinant;
+
+	result.m[1][3] =
+		(m.m[0][0] * m.m[1][2] * m.m[2][3]
+			+ m.m[0][2] * m.m[1][3] * m.m[2][0]
+			+ m.m[0][3] * m.m[1][0] * m.m[2][2]
+			- m.m[0][3] * m.m[1][2] * m.m[2][0]
+			- m.m[0][2] * m.m[1][0] * m.m[2][3]
+			- m.m[0][0] * m.m[1][3] * m.m[2][2]
+			) / determinant;
+
+
+
+	result.m[2][0] =
+		(m.m[1][0] * m.m[2][1] * m.m[3][3]
+			+ m.m[1][1] * m.m[2][3] * m.m[3][0]
+			+ m.m[1][3] * m.m[2][0] * m.m[3][1]
+			- m.m[1][3] * m.m[2][1] * m.m[3][0]
+			- m.m[1][1] * m.m[2][0] * m.m[3][3]
+			- m.m[1][0] * m.m[2][3] * m.m[3][1]
+			) / determinant;
+
+	result.m[2][1] =
+		(-m.m[0][0] * m.m[2][1] * m.m[3][3]
+			- m.m[0][1] * m.m[2][3] * m.m[3][0]
+			- m.m[0][3] * m.m[2][0] * m.m[3][1]
+			+ m.m[0][3] * m.m[2][1] * m.m[3][0]
+			+ m.m[0][1] * m.m[2][0] * m.m[3][3]
+			+ m.m[0][0] * m.m[2][3] * m.m[3][1]
+			) / determinant;
+
+	result.m[2][2] =
+		(m.m[0][0] * m.m[1][1] * m.m[3][3]
+			+ m.m[0][1] * m.m[1][3] * m.m[3][0]
+			+ m.m[0][3] * m.m[1][0] * m.m[3][1]
+			- m.m[0][3] * m.m[1][1] * m.m[3][0]
+			- m.m[0][1] * m.m[1][0] * m.m[3][3]
+			- m.m[0][0] * m.m[1][3] * m.m[3][1]
+			) / determinant;
+
+	result.m[2][3] =
+		(-m.m[0][0] * m.m[1][1] * m.m[2][3]
+			- m.m[0][1] * m.m[1][3] * m.m[2][0]
+			- m.m[0][3] * m.m[1][0] * m.m[2][1]
+			+ m.m[0][3] * m.m[1][1] * m.m[2][0]
+			+ m.m[0][1] * m.m[1][0] * m.m[2][3]
+			+ m.m[0][0] * m.m[1][3] * m.m[2][1]
+			) / determinant;
+
+
+
+	result.m[3][0] =
+		(-m.m[1][0] * m.m[2][1] * m.m[3][2]
+			- m.m[1][1] * m.m[2][2] * m.m[3][0]
+			- m.m[1][2] * m.m[2][0] * m.m[3][1]
+			+ m.m[1][2] * m.m[2][1] * m.m[3][0]
+			+ m.m[1][1] * m.m[2][0] * m.m[3][2]
+			+ m.m[1][0] * m.m[2][2] * m.m[3][1]
+			) / determinant;
+
+	result.m[3][1] =
+		(m.m[0][0] * m.m[2][1] * m.m[3][2]
+			+ m.m[0][1] * m.m[2][2] * m.m[3][0]
+			+ m.m[0][2] * m.m[2][0] * m.m[3][1]
+			- m.m[0][2] * m.m[2][1] * m.m[3][0]
+			- m.m[0][1] * m.m[2][0] * m.m[3][2]
+			- m.m[0][0] * m.m[2][2] * m.m[3][1]
+			) / determinant;
+
+
+	result.m[3][2] =
+		(-m.m[0][0] * m.m[1][1] * m.m[3][2]
+			- m.m[0][1] * m.m[1][2] * m.m[3][0]
+			- m.m[0][2] * m.m[1][0] * m.m[3][1]
+			+ m.m[0][2] * m.m[1][1] * m.m[3][0]
+			+ m.m[0][1] * m.m[1][0] * m.m[3][2]
+			+ m.m[0][0] * m.m[1][2] * m.m[3][1]
+			) / determinant;
+
+	result.m[3][3] =
+		(m.m[0][0] * m.m[1][1] * m.m[2][2]
+			+ m.m[0][1] * m.m[1][2] * m.m[2][0]
+			+ m.m[0][2] * m.m[1][0] * m.m[2][1]
+			- m.m[0][2] * m.m[1][1] * m.m[2][0]
+			- m.m[0][1] * m.m[1][0] * m.m[2][2]
+			- m.m[0][0] * m.m[1][2] * m.m[2][1]
+			) / determinant;
+	return result;
+}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -316,8 +500,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 v2{ 2.8f,0.4f,-1.3f };
 	Vector3 rotate{};
 	Vector3 translate{};
-	Vector3 cameraPosition{};
+	Vector3 cameraPosition{0.0f,0.0f,0.0f };
+	const int kWindowWidth = 1280;
+	const int kWindowHeight = 720;
 
+	Vector3 kLocalVertices[3];
+	kLocalVertices[0] = { 0.0f,0.0f,1.0f };
+	kLocalVertices[1] = { 1.0f,-1.0f,10.0f };
+	kLocalVertices[2] = { -1.0f,-1.0f,10.0f };
 	
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -331,18 +521,50 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
+		if (keys[DIK_A]) {
+			translate.x -= 0.1f;
+		}
+		if (keys[DIK_D]) {
+			translate.x += 0.1f;
+		}
+		if (keys[DIK_S]) {
+			translate.y -= 0.1f;
+		}
+		if (keys[DIK_W]) {
+			translate.y += 0.1f;
+		}
+
+		if (keys[DIK_RIGHTARROW]) {
+			rotate.y += 0.1f;
+		}
+		if (keys[DIK_LEFTARROW]) {
+			rotate.y -= 0.1f;
+		}
+
 		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, rotate, translate);
 		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
-		//Matrix4x4 viewMatrix = 
+		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+		Matrix4x4 projectionMatrix = MakeperspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
+		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth) , float(kWindowHeight), 0.0f, 1.0f);
+		Vector3 screenVertices[3];
+		for (uint32_t i = 0; i < 3; i++) {
+			Vector3 ndcVertex = Transform(kLocalVertices[i], worldViewProjectionMatrix);
+			screenVertices[i] = Transform(ndcVertex, viewportMatrix);
+		}
+
 		Vector3 cross = Cross(v1,v2);
 		///
 		/// ↑更新処理ここまで
 		///
-
+		
 		///
 		/// ↓描画処理ここから
 		///
-	
+		Novice::DrawTriangle(
+			int(screenVertices[0].x), int(screenVertices[0].y), int(screenVertices[1].x), int(screenVertices[1].y),
+			int(screenVertices[2].x), int(screenVertices[2].y), RED, kFillModeSolid
+		);
 		VectorScreenPrintf(0, 0, cross, "Cross");
 		///
 		/// ↑描画処理ここまで
