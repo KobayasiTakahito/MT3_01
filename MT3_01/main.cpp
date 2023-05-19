@@ -500,14 +500,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 v2{ 2.8f,0.4f,-1.3f };
 	Vector3 rotate{};
 	Vector3 translate{};
-	Vector3 cameraPosition{0.0f,0.0f,0.0f };
+	Vector3 cameraPosition{0.0f,0.0f,-10.0f };
 	const int kWindowWidth = 1280;
 	const int kWindowHeight = 720;
 
 	Vector3 kLocalVertices[3];
-	kLocalVertices[0] = { 0.0f,0.0f,1.0f };
-	kLocalVertices[1] = { 1.0f,-1.0f,10.0f };
-	kLocalVertices[2] = { -1.0f,-1.0f,10.0f };
+	kLocalVertices[0] = { 0.0f,0.0f,0.0f };
+	kLocalVertices[1] = { 1.0f,-1.0f,0.0f };
+	kLocalVertices[2] = { -1.0f,-1.0f,0.0f };
 	
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -528,10 +528,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			translate.x += 0.1f;
 		}
 		if (keys[DIK_S]) {
-			translate.y -= 0.1f;
+			translate.z -= 0.1f;
 		}
 		if (keys[DIK_W]) {
-			translate.y += 0.1f;
+			translate.z += 0.1f;
 		}
 
 		if (keys[DIK_RIGHTARROW]) {
