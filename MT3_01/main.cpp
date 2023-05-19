@@ -534,12 +534,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			translate.z += 0.1f;
 		}
 
-		if (keys[DIK_RIGHTARROW]) {
+		
 			rotate.y += 0.1f;
-		}
-		if (keys[DIK_LEFTARROW]) {
-			rotate.y -= 0.1f;
-		}
+		
 
 		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, rotate, translate);
 		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
