@@ -491,12 +491,7 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix,const Matrix4x4& viewportMat
 	const uint32_t kSubdivision = 10;
 	const float kGridEvery = (kGridHalfWideh * 2.0f) / float(kSubdivision);
 
-	/*Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, rotate, translate);
-	Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
-	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-	Matrix4x4 projectionMatrix = MakeperspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
-	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-	Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);*/
+	
 
 	for (uint32_t xIndex = 0; xIndex <= kSubdivision; ++xIndex) {
 		
