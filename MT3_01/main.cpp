@@ -486,22 +486,72 @@ Matrix4x4 Inverse(const Matrix4x4& m) {
 	return result;
 }
 
-void DrawGrid(const Matrix4x4& viewProjectionMatrix,const Matrix4x4& viewportMatrix) {
-	const float kGridHalfWideh = 2.0f;
-	const uint32_t kSubdivision = 10;
-	const float kGridEvery = (kGridHalfWideh * 2.0f) / float(kSubdivision);
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
+	const float kGridHalfwidth = 2.0f; //Gridの半分
+	const uint32_t ksubdivsion = 10;   //分割数
+	const float kGridEvery = (kGridHalfwidth * 2.0f) / float(ksubdivsion);	//１つ分の長さ
 
-	
+	Vector3 worldVertices[2];
+	Vector3 screenVertices[2];
+	Vector3 ndcVertex;
 
-	for (uint32_t xIndex = 0; xIndex <= kSubdivision; ++xIndex) {
-		
-		//Novice::DrawLine(-kGridHalfWideh * xIndex, -kGridEvery, -kGridHalfWideh * xIndex, kGridEvery, 0xAAAAAAFF);
+	//奥から手前への線を順々に引いていく
+	for (uint32_t xIndex = 0; xIndex <= ksubdivsion; ++xIndex) {
+		//ワールド座標
+		worldVertices[0] = { xIndex * kGridEvery - kGridHalfwidth,0.0f,kGridHalfwidth };
+		worldVertices[1] = { xIndex * kGridEvery - kGridHalfwidth,0.0f, -kGridHalfwidth };
+		//スクリーンへ変換
+		for (uint32_t i = 0; i < 2; ++i) {
+			ndcVertex = Transform(worldVertices[i], viewProjectionMatrix);
+			screenVertices[i] =Transform(ndcVertex, viewportMatrix);
+		}
+
+		if (xIndex * kGridEvery - kGridHalfwidth == 0.0f) {
+			Novice::DrawLine(
+				int(screenVertices[0].x), int(screenVertices[0].y),
+				int(screenVertices[1].x), int(screenVertices[1].y),
+				0x000000FF
+			);
+		}
+		else {
+			Novice::DrawLine(
+				int(screenVertices[0].x), int(screenVertices[0].y),
+				int(screenVertices[1].x), int(screenVertices[1].y),
+				0xAAAAAAFF
+			);
+		}
+
 	}
-	for (uint32_t zIndex = 0; zIndex <= kSubdivision; ++zIndex) {
-		//Novice::DrawLine(0, -kGridHalfWideh*zIndex ,)
+
+	//左から右も同じように順々に引いていく
+	for (uint32_t zIndex = 0; zIndex <= ksubdivsion; ++zIndex) {
+		//ワールド座標
+		worldVertices[0] = { kGridHalfwidth,0.0f,zIndex * kGridEvery - kGridHalfwidth };
+		worldVertices[1] = { -kGridHalfwidth,0.0f, zIndex * kGridEvery - kGridHalfwidth };
+		//スクリーンへ変換
+		for (uint32_t i = 0; i < 2; ++i) {
+			ndcVertex = Transform(worldVertices[i], viewProjectionMatrix);
+			screenVertices[i] =Transform(ndcVertex, viewportMatrix);
+		}
+
+		if (zIndex * kGridEvery - kGridHalfwidth == 0.0f) {
+			Novice::DrawLine(
+				int(screenVertices[0].x), int(screenVertices[0].y),
+				int(screenVertices[1].x), int(screenVertices[1].y),
+				0x000000FF
+			);
+		}
+		else {
+			Novice::DrawLine(
+				int(screenVertices[0].x), int(screenVertices[0].y),
+				int(screenVertices[1].x), int(screenVertices[1].y),
+				0xAAAAAAFF
+			);
+		}
+
 	}
 
-}
+};
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -515,7 +565,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Vector3 v1{ 1.2f,-3.9f,2.5f };
 	Vector3 v2{ 2.8f,0.4f,-1.3f };
-	
+	Vector3 rotate{};
+	Vector3 translate{};
+	Vector3 cameraPosition{ 0.0f,1.9f,-10.0f };
+	const int kWindowWidth = 1280;
+	const int kWindowHeight = 720;
 	
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -529,7 +583,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
-		
+		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, rotate, translate);
+		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
+		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+		Matrix4x4 projectionMatrix = MakeperspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
+		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 		///
 		/// ↑更新処理ここまで
 		///
@@ -537,7 +596,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-		
+		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
 		///
 		/// ↑描画処理ここまで
 		///
