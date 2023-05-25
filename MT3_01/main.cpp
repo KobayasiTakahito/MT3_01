@@ -2,6 +2,7 @@
 #include <cmath>
 #include<cassert>
 #include<numbers>
+#include<imgui.h>
 
 const char kWindowTitle[] = "LD2A_05_コバヤシ_タカヒト_タイトル";
 
@@ -13,6 +14,13 @@ struct Matrix4x4
 {
 	float m[4][4];
 };
+Vector3 Add(const Vector3& v1, const Vector3& v2) {
+	Vector3 result;
+	result.x = v1.x + v2.x;
+	result.y = v1.y + v2.y;
+	result.z = v1.z + v2.z;
+	return result;
+}
 //Matrix4x4 積
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
@@ -572,19 +580,19 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
 			//world座標系でのa,b,cを求める
 			Vector3 a, b, c;
 			a = { sphere.radius * std::cosf(lat) * std::cosf(lon), sphere.radius * std::sinf(lat), sphere.radius * std::cosf(lat) * std::sinf(lon) };
-			a = Vec3dd(a, sphere.center);
+			a = Add(a, sphere.center);
 			b = { sphere.radius * std::cosf(lat + kLatEvery) * std::cosf(lon), sphere.radius * std::sinf(lat + kLatEvery), sphere.radius * std::cosf(lat + kLatEvery) * std::sinf(lon) };
 			b = Add(b, sphere.center);
 			c = { sphere.radius * std::cosf(lat) * std::cosf(lon + kLonEvery), sphere.radius * std::sinf(lat), sphere.radius * std::cosf(lat) * std::sinf(lon + kLonEvery) };
 			c = Add(c, sphere.center);
 
 			//a,b,cをスクリーン座標へ
-			a = Rendering::TransformNormal(a, viewProjectionMatrix);
-			a = Rendering::TransformNormal(a, viewportMatrix);
-			b = Rendering::TransformNormal(b, viewProjectionMatrix);
-			b = Rendering::TransformNormal(b, viewportMatrix);
-			c = Rendering::TransformNormal(c, viewProjectionMatrix);
-			c = Rendering::TransformNormal(c, viewportMatrix);
+			a = Transform(a, viewProjectionMatrix);
+			a = Transform(a, viewportMatrix);
+			b = Transform(b, viewProjectionMatrix);
+			b = Transform(b, viewportMatrix);
+			c = Transform(c, viewProjectionMatrix);
+			c = Transform(c, viewportMatrix);
 
 
 			//線を引く
@@ -622,6 +630,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
 	const int kWindowWidth = 1280;
 	const int kWindowHeight = 720;
+	Sphere sphere = { 0.0f,0.0f, 0.0f, 1.0f };
 	
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -649,6 +658,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
+		DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix, BLACK);
+
+		ImGui::Begin("Window");
+		ImGui::DragFloat3("CameraTranslate", &cameraPosition.x, 0.01f);
+		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+		ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+		ImGui::DragFloat3("SphereRadius", &sphere.radius, 0.01f);
+		ImGui::End();
 		///
 		/// ↑描画処理ここまで
 		///
