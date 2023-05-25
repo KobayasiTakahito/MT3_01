@@ -1,6 +1,7 @@
 #include <Novice.h>
 #include <cmath>
 #include<cassert>
+#include<numbers>
 
 const char kWindowTitle[] = "LD2A_05_コバヤシ_タカヒト_タイトル";
 
@@ -552,7 +553,57 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 	}
 
 };
+struct Sphere
+{
+	Vector3 center; //中心点
+	float radius;   //半径
+};
 
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color) {
+	const uint32_t kSubdivision = 30; //分割数
+	const float kLonEvery = 2.0f * float(std::numbers::pi) / float(kSubdivision);//経度分割1つ分の角度
+	const float kLatEvery = float(std::numbers::pi) / float(kSubdivision);//緯度分割1つ分の角度
+	//緯度の方向に分割 
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -1.0f * float(std::numbers::pi) / 2.0f + kLatEvery * latIndex;//現在の緯度
+		//経度の方向に分割
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			float lon = lonIndex * kLonEvery;//現在の経度
+			//world座標系でのa,b,cを求める
+			Vector3 a, b, c;
+			a = { sphere.radius * std::cosf(lat) * std::cosf(lon), sphere.radius * std::sinf(lat), sphere.radius * std::cosf(lat) * std::sinf(lon) };
+			a = Vec3dd(a, sphere.center);
+			b = { sphere.radius * std::cosf(lat + kLatEvery) * std::cosf(lon), sphere.radius * std::sinf(lat + kLatEvery), sphere.radius * std::cosf(lat + kLatEvery) * std::sinf(lon) };
+			b = Add(b, sphere.center);
+			c = { sphere.radius * std::cosf(lat) * std::cosf(lon + kLonEvery), sphere.radius * std::sinf(lat), sphere.radius * std::cosf(lat) * std::sinf(lon + kLonEvery) };
+			c = Add(c, sphere.center);
+
+			//a,b,cをスクリーン座標へ
+			a = Rendering::TransformNormal(a, viewProjectionMatrix);
+			a = Rendering::TransformNormal(a, viewportMatrix);
+			b = Rendering::TransformNormal(b, viewProjectionMatrix);
+			b = Rendering::TransformNormal(b, viewportMatrix);
+			c = Rendering::TransformNormal(c, viewProjectionMatrix);
+			c = Rendering::TransformNormal(c, viewportMatrix);
+
+
+			//線を引く
+			Novice::DrawLine(
+				int(a.x), int(a.y),
+				int(b.x), int(b.y),
+				color
+			);
+
+			Novice::DrawLine(
+				int(a.x), int(a.y),
+				int(c.x), int(c.y),
+				color
+			);
+
+		}
+	}
+
+};
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -568,6 +619,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 rotate{};
 	Vector3 translate{};
 	Vector3 cameraPosition{ 0.0f,1.9f,-10.0f };
+	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
 	const int kWindowWidth = 1280;
 	const int kWindowHeight = 720;
 	
