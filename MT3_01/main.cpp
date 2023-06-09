@@ -2,6 +2,7 @@
 #include <cmath>
 #include<cassert>
 #include<numbers>
+#include"Line.h"
 #include<imgui.h>
 
 const char kWindowTitle[] = "LD2A_05_コバヤシ_タカヒト_タイトル";
@@ -612,6 +613,20 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
 	}
 
 };
+
+Vector3 Project(const Vector3& v1, const Vector3& v2) {
+
+}
+
+Vector3 ClosestPoint(const Vector3& point, const Segment& segment) {
+
+}
+
+
+
+
+
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -622,8 +637,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
-	Vector3 v1{ 1.2f,-3.9f,2.5f };
-	Vector3 v2{ 2.8f,0.4f,-1.3f };
+	 
+	Segment segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
+	Vector3 poimt{ -1.5f,0.6f,0.6f };
+
+
+
+	
 	Vector3 rotate{};
 	Vector3 translate{};
 	Vector3 cameraPosition{ 0.0f,1.9f,-6.49f };
