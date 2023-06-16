@@ -649,7 +649,8 @@ Vector3 Closestpoint(const Vector3& point, const Segment& segment) {
 }
 
 bool Iscollision(const Sphere& s1, const Sphere& s2) {
-	float distance = Length(s2.center - s1.center);
+	Vector3 distance =  Project(Subtract(s1.center, s2.center), s2.center);
+	Vector3 closestPoint = Closestpoint(s1.center, s2.center);
 }
 
 
