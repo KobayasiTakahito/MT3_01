@@ -5,15 +5,12 @@
 #include"Line.h"
 #include <algorithm>
 #include<imgui.h>
+#include<Matrix4x4.h>
+#include<Shape.h>
+
 
 const char kWindowTitle[] = "LD2A_05_コバヤシ_タカヒト_タイトル";
 
-;
-
-struct Matrix4x4
-{
-	float m[4][4];
-};
 Vector3 Add(const Vector3& v1, const Vector3& v2) {
 	Vector3 result;
 	result.x = v1.x + v2.x;
@@ -561,11 +558,7 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 	}
 
 };
-struct Sphere
-{
-	Vector3 center; //中心点
-	float radius;   //半径
-};
+
 
 void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color) {
 	const uint32_t kSubdivision = 30; //分割数
@@ -649,7 +642,7 @@ Vector3 Closestpoint(const Vector3& point, const Segment& segment) {
 }
 
 bool Iscollision(const Sphere& s1, const Sphere& s2) {
-	float distance = Length(Subtract(s1.center,s2.center)) + Length(Subtract(s1.center, s2.center));
+	float distance = Length(Add(Subtract(s1.center,s2.center),(Subtract(s1.center, s2.center))));
 	if (distance <= (s1.radius + s2.radius)* (s1.radius + s2.radius)) {
 		return true;
 	}
