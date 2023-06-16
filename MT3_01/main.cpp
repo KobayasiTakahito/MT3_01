@@ -649,8 +649,11 @@ Vector3 Closestpoint(const Vector3& point, const Segment& segment) {
 }
 
 bool Iscollision(const Sphere& s1, const Sphere& s2) {
-	Vector3 distance =  Project(Subtract(s1.center, s2.center), s2.center);
-	Vector3 closestPoint = Closestpoint(s1.center, s2.center);
+	float distance = Length(Subtract(s1.center,s2.center)) + Length(Subtract(s1.center, s2.center));
+	if (distance <= (s1.radius + s2.radius)* (s1.radius + s2.radius)) {
+		return true;
+	}
+	return false;
 }
 
 
@@ -689,7 +692,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 		
-
+		
 
 		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, rotate, translate);
 		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, cameraRotate, cameraPosition);
@@ -707,17 +710,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
-		DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, BLACK);
-		DrawSphere(sphere2, worldViewProjectionMatrix, viewportMatrix, BLACK);
-
+		if (Iscollision(sphere1, sphere2)) {
+			DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, RED);
+			DrawSphere(sphere2, worldViewProjectionMatrix, viewportMatrix, RED);
+		}
+		else {
+			DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, BLACK);
+			DrawSphere(sphere2, worldViewProjectionMatrix, viewportMatrix, BLACK);
+		}
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("CameraTranslate", &cameraPosition.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-		ImGui::DragFloat3("SphereCenter", &sphere1.center.x, 0.01f);
-		ImGui::DragFloat3("SphereRadius", &sphere1.radius, 0.01f);
+		ImGui::DragFloat3("SphereCenter1", &sphere1.center.x, 0.01f);
+		ImGui::DragFloat3("SphereRadius1", &sphere1.radius, 0.01f);
 
-		ImGui::DragFloat3("SphereCenter", &sphere2.center.x, 0.01f);
-		ImGui::DragFloat3("SphereRadius", &sphere2.radius, 0.01f);
+		ImGui::DragFloat3("SphereCenter2", &sphere2.center.x, 0.01f);
+		ImGui::DragFloat3("SphereRadius2", &sphere2.radius, 0.01f);
 		ImGui::End();
 		///
 		/// ↑描画処理ここまで
