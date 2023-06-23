@@ -648,7 +648,51 @@ bool Iscollision(const Sphere& s1, const Sphere& s2) {
 	}
 	return false;
 }
+Vector3 Perpendicular(const Vector3& vector) {
+	if (vector.x != 0.0f || vector.y != 0.0f) {
+		return { -vector.y , vector.x , 0.0f };
+	}
+	return { 0.0f,-vector.z,vector.y };
+}
 
+void DrawPlane(const Plane& plane,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix,uint32_t color) {
+	Vector3 center = Multiply(plane.distance, plane.normal);
+	Vector3 perpendiculars[4];
+	perpendiculars[0] = Normalise(Perpendicular(plane.normal));
+	perpendiculars[1] = { -perpendiculars[0].x, -perpendiculars[0].y,-perpendiculars[0].z };
+	perpendiculars[2] = Cross(plane.normal, perpendiculars[0]);
+	perpendiculars[3] = { -perpendiculars[2].x,-perpendiculars[2].y,-perpendiculars[2].z };
+	Vector3 points[4];
+	for (int32_t index = 0; index < 4; ++ index) {
+		Vector3 extend = Multiply(2.0f, perpendiculars[index]);
+		Vector3 point = Add(center, extend);
+		points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
+	}
+	Novice::DrawLine(
+		int(points[2].x), int(points[2].y),
+		int(points[0].x), int(points[0].y),
+		color);
+	Novice::DrawLine(
+		int(points[3].x), int(points[3].y),
+		int(points[1].x), int(points[1].y),
+		color);
+	Novice::DrawLine(
+		int(points[1].x), int(points[1].y),
+		int(points[2].x), int(points[2].y),
+		color);
+	Novice::DrawLine(
+		int(points[0].x), int(points[0].y),
+		int(points[3].x), int(points[3].y),
+		color);
+
+}
+bool Iscollision(const Plane& p1, const Sphere& s1) {
+	float distance = Dot(s1.center, p1.normal) - p1.distance;
+	if (std::abs(distance) <= s1.radius  ) {
+		return true;
+	}
+	return false;
+}
 
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -661,8 +705,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
 
-	Vector3 v1{ 1.2f,-3.9f,2.5f };
-	Vector3 v2{ 2.8f,0.4f,-1.3f };
+	
 	Vector3 rotate{};
 	Vector3 translate{};
 	Vector3 cameraPosition{ 0.0f,1.9f,-6.49f };
@@ -671,6 +714,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	const int kWindowHeight = 720;
 	Sphere sphere1 = { 0.2f,0.2f, 0.2f, 1.0f };
 	Sphere sphere2 = { -1.0f,-1.0f, -1.0f, 1.0f };
+	Plane plane = { {0,1,0},1 };
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -684,8 +728,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
-		
-		
 
 		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, rotate, translate);
 		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, cameraRotate, cameraPosition);
@@ -703,22 +745,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
-		if (Iscollision(sphere1, sphere2)) {
+		DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix,WHITE);
+		if (Iscollision(plane,sphere1)) {
 			DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, RED);
-			DrawSphere(sphere2, worldViewProjectionMatrix, viewportMatrix, RED);
+		
 		}
 		else {
 			DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, BLACK);
-			DrawSphere(sphere2, worldViewProjectionMatrix, viewportMatrix, BLACK);
+			
 		}
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("CameraTranslate", &cameraPosition.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
 		ImGui::DragFloat3("SphereCenter1", &sphere1.center.x, 0.01f);
 		ImGui::DragFloat3("SphereRadius1", &sphere1.radius, 0.01f);
+		ImGui::DragFloat3("Plane.normal", &plane.normal.x, 0.01f);
+		plane.normal = Normalise(plane.normal);
 
-		ImGui::DragFloat3("SphereCenter2", &sphere2.center.x, 0.01f);
-		ImGui::DragFloat3("SphereRadius2", &sphere2.radius, 0.01f);
+		
 		ImGui::End();
 		///
 		/// ↑描画処理ここまで
