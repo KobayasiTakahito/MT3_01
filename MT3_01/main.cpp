@@ -693,7 +693,20 @@ bool Iscollision(const Plane& p1, const Sphere& s1) {
 	}
 	return false;
 }
-
+bool Iscollision(const Plane& p1, const Line& l1) {
+	float dot = Dot(p1.normal, l1.diff);
+	if (dot == 0.0f) {
+		return false;
+	}
+	float t = (p1.distance - Dot(l1.origin, p1.normal)) / dot;
+	if (t = p1.distance) {
+		true;
+	}
+	if (t = p1.distance * 2) {
+		true;
+	}
+	return false;
+}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -713,7 +726,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	const int kWindowWidth = 1280;
 	const int kWindowHeight = 720;
 	Sphere sphere1 = { 0.2f,0.2f, 0.2f, 1.0f };
-	Sphere sphere2 = { -1.0f,-1.0f, -1.0f, 1.0f };
+	Line line = {}
 	Plane plane = { {0,1,0},1 };
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -747,11 +760,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
 		DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix,WHITE);
 		if (Iscollision(plane,sphere1)) {
-			DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, RED);
-		
+			//DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, RED);
+		Novice::DrawLine()
 		}
 		else {
-			DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, BLACK);
+			//DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, BLACK);
 			
 		}
 		ImGui::Begin("Window");
