@@ -702,9 +702,8 @@ bool Iscollision(const Plane& p1, const Line& l1) {
 	if (0.0f <= t && t<= 1.0f) {
 		return true;
 	}
-	else {
-		return false;
-	}
+	return false;
+	
 }
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -727,7 +726,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Sphere sphere1 = { 0.2f,0.2f, 0.2f, 1.0f };
 	Line segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
 	Plane plane = { {0,1,0},1 };
-
+	unsigned int color = BLACK;
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -750,7 +749,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		Vector3 start = Transform(Transform(segment.origin, worldViewProjectionMatrix), viewportMatrix);
 		Vector3 end = Transform(Transform(Add(segment.origin, segment.diff), worldViewProjectionMatrix), viewportMatrix);
-
+		if (Iscollision(plane,segment)) {
+			color = RED;
+		}
+		else {
+			color = BLACK;
+		}
+		ImGui::Begin("window");
+		ImGui::DragFloat3("CameraTranslate", &translate.x, 0.01f);
+		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+		ImGui::DragFloat3("Line", &segment.origin.x, 0.01f);
+		ImGui::DragFloat3("PlaneCenter", &plane.normal.x, 0.01f);
+		
+		ImGui::End();
 		///
 		/// ↑更新処理ここまで
 		///
@@ -759,25 +770,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
-		DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix,WHITE);
-		if (Iscollision(plane,segment)) {
-			//DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, RED);
-			Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, RED);
-		}
-		else {
-			//DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, BLACK);
-			Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, WHITE);
-
-		}
-		ImGui::Begin("Window");
-		ImGui::DragFloat3("CameraTranslate", &cameraPosition.x, 0.01f);
-		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+		DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, WHITE);
 		
-		ImGui::DragFloat3("Plane.normal", &plane.normal.x, 0.01f);
-		plane.normal = Normalise(plane.normal);
+		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
+		Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, color);
+		DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, WHITE);
 
 		
-		ImGui::End();
+		
 		///
 		/// ↑描画処理ここまで
 		///
