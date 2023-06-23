@@ -699,13 +699,12 @@ bool Iscollision(const Plane& p1, const Line& l1) {
 		return false;
 	}
 	float t = (p1.distance - Dot(l1.origin, p1.normal)) / dot;
-	if (t = p1.distance) {
-		true;
+	if (0.0f <= t && t<= 1.0f) {
+		return true;
 	}
-	if (t = p1.distance * 2) {
-		true;
+	else {
+		return false;
 	}
-	return false;
 }
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -726,7 +725,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	const int kWindowWidth = 1280;
 	const int kWindowHeight = 720;
 	Sphere sphere1 = { 0.2f,0.2f, 0.2f, 1.0f };
-	Line line = {}
+	Line segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
 	Plane plane = { {0,1,0},1 };
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -749,6 +748,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
+		Vector3 start = Transform(Transform(segment.origin, worldViewProjectionMatrix), viewportMatrix);
+		Vector3 end = Transform(Transform(Add(segment.origin, segment.diff), worldViewProjectionMatrix), viewportMatrix);
 
 		///
 		/// ↑更新処理ここまで
@@ -759,19 +760,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
 		DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix,WHITE);
-		if (Iscollision(plane,sphere1)) {
+		if (Iscollision(plane,segment)) {
 			//DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, RED);
-		Novice::DrawLine()
+			Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, RED);
 		}
 		else {
 			//DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, BLACK);
-			
+			Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, WHITE);
+
 		}
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("CameraTranslate", &cameraPosition.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-		ImGui::DragFloat3("SphereCenter1", &sphere1.center.x, 0.01f);
-		ImGui::DragFloat3("SphereRadius1", &sphere1.radius, 0.01f);
+		
 		ImGui::DragFloat3("Plane.normal", &plane.normal.x, 0.01f);
 		plane.normal = Normalise(plane.normal);
 
