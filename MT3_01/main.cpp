@@ -804,7 +804,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("triangle0", &triangle.vertices[0].x, 0.01f);
 		ImGui::DragFloat3("triangle1", &triangle.vertices[1].x, 0.01f);
 		ImGui::DragFloat3("triangle2", &triangle.vertices[2].x, 0.01f);
-		ImGui::DragFloat3("PlaneCenter", &plane.normal.x, 0.01f);
+		ImGui::DragFloat3("Line", &segment.origin.x, 0.01f);
 		
 		ImGui::End();
 		///
@@ -817,7 +817,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
 		//DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, WHITE);
 		DrawTriangle(triangle, worldViewProjectionMatrix, viewportMatrix, WHITE);
-		
+		Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, color);
+
 		
 		
 		
