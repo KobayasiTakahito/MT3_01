@@ -491,7 +491,6 @@ Matrix4x4 Inverse(const Matrix4x4& m) {
 			) / determinant;
 	return result;
 }
-
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
 	const float kGridHalfwidth = 2.0f; //Gridの半分
 	const uint32_t ksubdivsion = 10;   //分割数
@@ -557,10 +556,7 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 
 	}
 
-};
-
-
-void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color) {
+};void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color) {
 	const uint32_t kSubdivision = 30; //分割数
 	const float kLonEvery = 2.0f * float(std::numbers::pi) / float(kSubdivision);//経度分割1つ分の角度
 	const float kLatEvery = float(std::numbers::pi) / float(kSubdivision);//緯度分割1つ分の角度
@@ -705,6 +701,47 @@ bool Iscollision(const Plane& p1, const Line& l1) {
 	return false;
 	
 }
+bool Iscollision(const Triangle& triangle, const Line& l1) {
+	Vector3 cross01 = Cross(triangle.vertices[0], l1.diff);
+	Vector3 cross02 = Cross(triangle.vertices[1], l1.diff);
+	Vector3 cross03 = Cross(triangle.vertices[2], l1.diff);
+
+	if (Dot(cross01, Normalise(l1.diff)) >= 0.0f &&
+		Dot(cross02, Normalise(l1.diff)) >= 0.0f &&
+		Dot(cross03, Normalise(l1.diff)) >= 0.0f) {
+
+		return true;
+	}
+	return false;
+}
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix4x4, uint32_t color) {
+	
+	Vector3 screenVertices[3];
+	Vector3 ndcVertex;
+
+    //スクリーンへ変換
+	for (uint32_t i = 0; i < 3; ++i) {
+		ndcVertex = Transform(triangle.vertices[i], viewProjectionMatrix);
+		screenVertices[i] = Transform(ndcVertex, viewportMatrix4x4);
+		
+	}
+	Novice::DrawLine(
+		int(screenVertices[0].x), int(screenVertices[0].y),
+		int(screenVertices[1].x), int(screenVertices[1].y),
+		color
+	);
+	Novice::DrawLine(
+		int(screenVertices[0].x), int(screenVertices[0].y),
+		int(screenVertices[2].x), int(screenVertices[2].y),
+		color
+	);
+	Novice::DrawLine(
+		int(screenVertices[2].x), int(screenVertices[2].y),
+		int(screenVertices[1].x), int(screenVertices[1].y),
+		color
+	);
+}
+
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -726,7 +763,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Sphere sphere1 = { 0.2f,0.2f, 0.2f, 1.0f };
 	Line segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
 	Plane plane = { {0,1,0},1 };
-	unsigned int color = BLACK;
+	Triangle triangle;
+	triangle.vertices[0] = { 1.0f, 0.0f, 0.0f };
+	triangle.vertices[1] = { 0.0f, 1.0f, 0.0f };
+	triangle.vertices[2] = { 2.0f, 1.0f, 0.0f };
+ 	unsigned int color = BLACK;
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -747,9 +788,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
-		Vector3 start = Transform(Transform(segment.origin, worldViewProjectionMatrix), viewportMatrix);
-		Vector3 end = Transform(Transform(Add(segment.origin, segment.diff), worldViewProjectionMatrix), viewportMatrix);
-		if (Iscollision(plane,segment)) {
+		
+
+		if (Iscollision(triangle,segment)) {
 			color = RED;
 		}
 		else {
@@ -758,7 +799,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::Begin("window");
 		ImGui::DragFloat3("CameraTranslate", &translate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-		ImGui::DragFloat3("Line", &segment.origin.x, 0.01f);
+		ImGui::DragFloat3("triangle0", &triangle.vertices[0].x, 0.01f);
+		ImGui::DragFloat3("triangle1", &triangle.vertices[1].x, 0.01f);
+		ImGui::DragFloat3("triangle2", &triangle.vertices[2].x, 0.01f);
 		ImGui::DragFloat3("PlaneCenter", &plane.normal.x, 0.01f);
 		
 		ImGui::End();
@@ -770,12 +813,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
-		DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, WHITE);
+		//DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, WHITE);
+		DrawTriangle(triangle, worldViewProjectionMatrix, viewportMatrix, WHITE);
 		
-		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
-		Novice::DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, color);
-		DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, WHITE);
-
+		
 		
 		
 		///
