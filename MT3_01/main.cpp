@@ -702,15 +702,15 @@ bool Iscollision(const Plane& p1, const Line& l1) {
 	
 }
 bool Iscollision(const Triangle& triangle, const Line& l1) {
-	Vector3 cross01 = Cross(triangle.vertices[0], l1.diff);
-	Vector3 cross02 = Cross(triangle.vertices[1], l1.diff);
-	Vector3 cross03 = Cross(triangle.vertices[2], l1.diff);
+	Vector3 cross01 = Cross(triangle.vertices[0], l1.origin);
+	Vector3 cross02 = Cross(triangle.vertices[1], l1.origin);
+	Vector3 cross03 = Cross(triangle.vertices[2], l1.origin);
 
 
 
-	if (Dot(cross01, Normalise(l1.diff)) >= 0.0f &&
-		Dot(cross02, Normalise(l1.diff)) >= 0.0f &&
-		Dot(cross03, Normalise(l1.diff)) >= 0.0f) {
+	if (Dot(cross01, Normalise(l1.origin)) >= 0.0f &&
+		Dot(cross02, Normalise(l1.origin)) >= 0.0f &&
+		Dot(cross03, Normalise(l1.origin)) >= 0.0f) {
 
 		return true;
 	}
