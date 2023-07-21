@@ -290,7 +290,7 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 	result.m[2][0] = 0.0f;
 	result.m[2][1] = 0.0f;
 	result.m[2][2] = maxDepth - minDepth;
-	result.m[0][3] = 0.0f;
+	result.m[2][3] = 0.0f;
 
 	result.m[3][0] = left + (width / 2);
 	result.m[3][1] = top + (height / 2);
@@ -705,6 +705,8 @@ bool Iscollision(const Triangle& triangle, const Line& l1) {
 	Vector3 cross01 = Cross(triangle.vertices[0], l1.diff);
 	Vector3 cross02 = Cross(triangle.vertices[1], l1.diff);
 	Vector3 cross03 = Cross(triangle.vertices[2], l1.diff);
+
+
 
 	if (Dot(cross01, Normalise(l1.diff)) >= 0.0f &&
 		Dot(cross02, Normalise(l1.diff)) >= 0.0f &&
