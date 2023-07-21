@@ -702,18 +702,37 @@ bool Iscollision(const Plane& p1, const Line& l1) {
 	
 }
 bool Iscollision(const Triangle& triangle, const Line& l1) {
-	Vector3 cross01 = Cross(triangle.vertices[0], l1.origin);
-	Vector3 cross02 = Cross(triangle.vertices[1], l1.origin);
-	Vector3 cross03 = Cross(triangle.vertices[2], l1.origin);
+	Vector3 v01 = Subtract(triangle.vertices[1], triangle.vertices[0]);
+	Vector3 v12 = Subtract(triangle.vertices[2], triangle.vertices[1]);
+	Vector3 v20 = Subtract(triangle.vertices[0], triangle.vertices[2]);
+
+	Plane p = { Normalise(Cross(v01,v12)),0.0f };
+	p.distance = p.normal.x * v20.x + p.normal.y * v20.y + p.normal.z * v20.z;
+
+	float dot = Dot(p.normal, l1.diff);
+	if (dot == 0.0f) {
+		return false;
+	}
+	float t = (p.distance - Dot(l1.origin, p.normal)) / dot;
+
+	Vector3 v1p = Subtract(Add(l1.origin, Multiply(t, l1.diff)), triangle.vertices[1]);
+	Vector3 v2p = Subtract(Add(l1.origin, Multiply(t, l1.diff)), triangle.vertices[2]);
+	Vector3 v0p = Subtract(Add(l1.origin, Multiply(t, l1.diff)), triangle.vertices[0]);
+
+	Vector3 cross01 = Cross(v01, v1p);
+	Vector3 cross02 = Cross(v12, v2p);
+	Vector3 cross03 = Cross(v20, v0p);
 
 
-
-	if (Dot(cross01, Normalise(l1.origin)) >= 0.0f &&
-		Dot(cross02, Normalise(l1.origin)) >= 0.0f &&
-		Dot(cross03, Normalise(l1.origin)) >= 0.0f) {
+	if (Dot(cross01, p.normal) >= 0.0f &&
+		Dot(cross02, p.normal) >= 0.0f &&
+		Dot(cross03, p.normal) >= 0.0f) {
 
 		return true;
 	}
+
+
+
 	return false;
 }
 void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix4x4, uint32_t color) {
@@ -763,7 +782,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	const int kWindowWidth = 1280;
 	const int kWindowHeight = 720;
 	Sphere sphere1 = { 0.2f,0.2f, 0.2f, 1.0f };
-	Line segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
+	Line segment{ {1.0f,1.0f,-2.0f},{2.0f,2.0f,2.0f} };
 	Plane plane = { {0,1,0},1 };
 	Triangle triangle;
 	triangle.vertices[0] = { 1.0f, 0.0f, 0.0f };
