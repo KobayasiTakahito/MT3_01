@@ -218,11 +218,9 @@ void VectorScreenPrintf(int x, int y, const Vector3& vector, const char* label) 
 	Novice::ScreenPrintf(x + kColumnWidth * 2, y, "%.02f", vector.z, label);
 	Novice::ScreenPrintf(x + kColumnWidth * 3, y, "%s", label);
 }
-
 float Cotangent(float b, float a) {
 	return (b / tanf(a));
 }
-
 //透投影行列
 Matrix4x4 MakeperspectiveFovMatrix(float fovY, float aspectRatio, float neatClip, float farClip) {
 	Matrix4x4 result;
@@ -273,7 +271,6 @@ Matrix4x4 MakeOrthographhicMatrix(float left, float top, float right, float bott
 	result.m[3][3] = 1.0f;
 	return result;
 }
-
 //ビューポート変換行列
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
 	Matrix4x4 result;
@@ -298,7 +295,6 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 	result.m[3][3] = 1.0f;
 	return result;
 }
-
 Vector3 Cross(const Vector3& v1, const Vector3& v2) {
 	Vector3 v3;
 	v3.x = (v1.y * v2.z - v1.z * v2.y);
