@@ -614,7 +614,6 @@ float Length(const Vector3& v) {
 	return sqrtf(Dot(v, v));
 
 }
-
 Vector3 Normalise(const Vector3& v) {
 	float len = Length(v);
 	if (len != 0) {
@@ -636,7 +635,6 @@ Vector3 Closestpoint(const Vector3& point, const Segment& segment) {
 	Vector3 proj = Multiply(distance, normaliseSeg);
 	return Add(segment.origin, proj);
 }
-
 bool Iscollision(const Sphere& s1, const Sphere& s2) {
 	float distance = Length(Add(Subtract(s1.center,s2.center),(Subtract(s1.center, s2.center))));
 	if (distance <= (s1.radius + s2.radius)* (s1.radius + s2.radius)) {
@@ -650,7 +648,6 @@ Vector3 Perpendicular(const Vector3& vector) {
 	}
 	return { 0.0f,-vector.z,vector.y };
 }
-
 void DrawPlane(const Plane& plane,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix,uint32_t color) {
 	Vector3 center = Multiply(plane.distance, plane.normal);
 	Vector3 perpendiculars[4];
@@ -762,7 +759,6 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatri
 		color
 	);
 }
-
 Vector3 TransformCoord(Vector3 vector, Matrix4x4 matrix) {
 	Vector3 result{};
 	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + 1.0f * matrix.m[3][0];
@@ -776,7 +772,6 @@ Vector3 TransformCoord(Vector3 vector, Matrix4x4 matrix) {
 	result.z /= w;
 	return result;
 }
-
 void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
 	Vector3 vers[8]{};
 	vers[0] = { aabb.min.x, aabb.min.y, aabb.min.z };
@@ -817,7 +812,6 @@ void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Mat
 	Novice::DrawLine(int(screenVers[6].x), int(screenVers[6].y), int(screenVers[7].x), int(screenVers[7].y), color);
 
 }
-
 Matrix4x4 MakeTranslateMatrix(const Vector3 translate) {
 	Matrix4x4 result{};
 
@@ -838,7 +832,6 @@ Matrix4x4 MakeTranslateMatrix(const Vector3 translate) {
 
 	return result;
 }
-
 bool IsCollision(const AABB& aabb1, const AABB& aabb2) {
 	if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) &&
 		(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) &&
