@@ -841,6 +841,21 @@ bool IsCollision(const AABB& aabb1, const AABB& aabb2) {
 	return false;
 
 }
+bool IsCollision(const AABB& aabb, const Sphere& sphere) {
+	Vector3 clossestPoint{
+		std::clamp(sphere.center.x, aabb.min.x, aabb.max.x),
+		std::clamp(sphere.center.y, aabb.min.y, aabb.max.y),
+		std::clamp(sphere.center.z, aabb.min.z, aabb.max.z)
+	};
+
+	float distance = Length(Subtract(clossestPoint, sphere.center));
+	if (distance <= sphere.radius) {
+		return true;
+	}
+
+	return false;
+
+}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -895,7 +910,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
-		if (IsCollision(aabb1, aabb2)) {
+		if (IsCollision(aabb1, sphere1)) {
 			color = RED;
 		}
 		else {
@@ -907,9 +922,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 		ImGui::DragFloat3("AABB1min", &aabb1.min.x, 0.1f, -1.0f, 5.0f);
 		ImGui::DragFloat3("AABB1max", &aabb1.max.x, 0.1f, -1.0f, 5.0f);
-		ImGui::DragFloat3("AABB2min", &aabb2.min.x, 0.1f, -1.0f, 5.0f);
-		ImGui::DragFloat3("AABB2max", &aabb2.max.x, 0.1f, -1.0f, 5.0f);
-
+		ImGui::DragFloat3("sphereC", &sphere1.center.x, 0.1f, -1.0f, 5.0f);
+		ImGui::DragFloat3("sphereR", &sphere1.radius, 0.1f, -1.0f, 5.0f);
 		
 		ImGui::End();
 		///
@@ -923,7 +937,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, WHITE);
 
 		DrawAABB(aabb1, worldViewProjectionMatrix, viewportMatrix, color);
-		DrawAABB(aabb2, worldViewProjectionMatrix, viewportMatrix, color);
+		DrawSphere(sphere1, worldViewProjectionMatrix, viewportMatrix, color);
+
 
 		
 		
