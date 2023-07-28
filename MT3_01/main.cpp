@@ -682,14 +682,14 @@ void DrawPlane(const Plane& plane,const Matrix4x4& viewProjectionMatrix, const M
 		color);
 
 }
-bool Iscollision(const Plane& p1, const Sphere& s1) {
+bool IsCollision(const Plane& p1, const Sphere& s1) {
 	float distance = Dot(s1.center, p1.normal) - p1.distance;
 	if (std::abs(distance) <= s1.radius  ) {
 		return true;
 	}
 	return false;
 }
-bool Iscollision(const Plane& p1, const Line& l1) {
+bool IsCollision(const Plane& p1, const Line& l1) {
 	float dot = Dot(p1.normal, l1.diff);
 	if (dot == 0.0f) {
 		return false;
@@ -701,7 +701,7 @@ bool Iscollision(const Plane& p1, const Line& l1) {
 	return false;
 	
 }
-bool Iscollision(const Triangle& triangle, const Line& l1) {
+bool IsCollision(const Triangle& triangle, const Line& l1) {
 	Vector3 v01 = Subtract(triangle.vertices[1], triangle.vertices[0]);
 	Vector3 v12 = Subtract(triangle.vertices[2], triangle.vertices[1]);
 	Vector3 v20 = Subtract(triangle.vertices[0], triangle.vertices[2]);
